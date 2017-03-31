@@ -1,0 +1,8 @@
+This is a database of notebooks featuring the use of fast to generate optical Bloch equations 
+both symbolically and numericall, as well as a few exercises in atomic physics. The notebooks
+can be viewed online, but in order to execute them interactively you'll need to install FAST
+in your coumputer. It can be downloaded from
+
+https://github.com/oscarlazoarjona/fast
+
+Enjoy!
