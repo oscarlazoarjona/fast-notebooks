@@ -5,7 +5,7 @@
 from doctest import testmod
 
 def find_braces(s,ini,end):
-    r"""This function returns a list of pairs of matching text indices in s 
+    r"""This function returns a list of pairs of matching text indices in s
     for parenthesis, braces,  brakets, etc as specified by ini and end."""
     toret = {}
     pstack = []
@@ -20,7 +20,7 @@ def find_braces(s,ini,end):
 
     if len(pstack) > 0:
         raise IndexError("No matching opening parens at: " + str(pstack.pop()))
-    
+
     pairs=[]
     for ini in toret:
         pairs+=[(ini,toret[ini])]
@@ -30,7 +30,7 @@ def find_braces(s,ini,end):
 
 def find_fields(text,left,right,preceded):
     r"""This function returns a list of instances of strings found in "text" that are between left and right one-character markers "left" and "right", as long as the left  marker is preceded by "preceded"."""
-    
+
     brackets= find_braces(text,left,right)
     fields=[]
     for ini,end in brackets:
@@ -39,12 +39,12 @@ def find_fields(text,left,right,preceded):
     return fields
 
 def get_cells(text):
-    r"""This function returns a list of tuples of the form 
+    r"""This function returns a list of tuples of the form
             (cell_type, source, outputs)"""
     # We find all instances of opening and closing braces.
     braces= find_braces(text,"{","}")
     cells=[]
-    
+
     # We determine which pairs of braces correspond to cells.
     for i,(ini,end) in enumerate(braces):
         content=text[ini:end+1]
@@ -54,10 +54,10 @@ def get_cells(text):
         if start == cell_ini:
             cell=content
             cell_type=cell[2+len(cell_ini):cell.find('",')]
-            
+
             # We get the source of the cell.
             source =find_fields(cell,"[","]", '"source": ')[0]
-            
+
             # There may or may not be outputs to the cell.
             outputs=find_fields(cell,"[","]",'"outputs": ')
             text_output=[]
@@ -69,9 +69,9 @@ def get_cells(text):
                 #~ print source
                 #~ print
                 #~ print text_output
-            
+
             #~ print i,len(text_output)
-            
+
             cells+=[(cell_type,source,text_output)]
     return cells
 ########################################################################
@@ -91,7 +91,7 @@ notebooks=[ r"01 - Two level atom.ipynb",
             r"10 - States database.ipynb"]
 ########################################################################
 # We choose a notebook.
-number=8
+number = 4
 notebook_name=notebooks[number-1]
 f=file(path_notebooks+notebook_name,"r")
 text=f.read()
@@ -108,7 +108,7 @@ __doc__ = r"""\n'''
 Nt=46
 for i,cell in enumerate(cells[:]):
     cell_code=""
-    
+
     if cell[0]=="markdown":
         doc+="\n"
         lines=cell[1].split("\n")
@@ -146,15 +146,15 @@ for i,cell in enumerate(cells[:]):
                         line="... "+line[5:]
                     else:
                         line=">>> "+line[5:]
-                
+
                 if "%matplotlib inline" in line:
                     line=""
-                    
+
                 if "pyplot.semilogx" in line: line=line+" # doctest: +IGNORE_PLOT_STEP1"
                 if "pyplot.plot"     in line: line=line+" # doctest: +IGNORE_PLOT_STEP1"
                 if "ax.plot"     in line: line=line+" # doctest: +IGNORE_PLOT_STEP1"
-                
-                
+
+
                 if "pyplot.ylabel"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
                 if "pyplot.xlabel"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
                 if "pyplot.legend"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
@@ -162,8 +162,8 @@ for i,cell in enumerate(cells[:]):
                 if "ax.set_xlabel"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
                 if "ax.set_ylabel"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
                 if "ax.legend"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
-                
-                
+
+
                 if "pyplot.axis"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
                 if "ax.set_xlim"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
                 if "ax.set_ylim"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
@@ -176,53 +176,53 @@ for i,cell in enumerate(cells[:]):
                 if "draw_lasers_3d("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
                 if "excitation("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
                 if "decay("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
-                
-                
+
+
                 line=line.replace(r"\\","\\")
                 line+="\n"
-                
+
                 cell_code+=line
                 last_line=line
-    
+
         if last_line[:4]=="... ":
             cell_code+="... \n"
-        
+
         # We enter the results, if any.
         outputs=cell[2]
-        
+
         for output in outputs:
             #print output
             lines=output.split("\n")
             for line in lines:
                 if line not in ['[','   ]']:
                     line=line.replace(r"\\","\\")
-                    
+
                     if line[-4:]=='\\n",': line=line[ :-4]
-                    
+
                     if line[-1:]==   '"' : line=line[ :-1]
-                    
+
                     if line[:7]=='      "' : line=line[7:  ]
-                    
+
                     if line[:8]=='       "' : line=line[8:  ]
-                    
+
                     if line[-2:]=='\\n': line=line[ :-2]
 
                     if line[-7:]=='      ]' and len(line)==len('      ]'): line="\n"
                     if line[-6:]== '     ]' and len(line)==len( '     ]'): line="\n"
-                    
-                    
-                    
+
+
+
                     blankline=True
                     for char in line:
                         if  char != ' ':
                             blankline=False
                             break
                     if blankline: line="<BLANKLINE>"
-                    
-                    
+
+
                     line+="\n"
                     cell_code+=line
-    
+
     doc+=cell_code
 
 doc+='\n"""\n'
@@ -258,7 +258,7 @@ print s
 exec(s)
 
 
-#Rules: 
+#Rules:
 #       cells that return text must do so at the end.
 #       cells for plotting must end with a savefig call
 #       lines of code cannot end in "
